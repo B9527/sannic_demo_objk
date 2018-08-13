@@ -6,7 +6,7 @@
 # @File    : first_page_view.py
 # @Software: PyCharm
 
-from sanic.response import text
+from sanic.response import text, json
 from sanic import Blueprint
 from sanic.views import HTTPMethodView
 from article.settings import app
@@ -50,9 +50,17 @@ class ContentListView(HTTPMethodView):
             "image_url_list": [],
             "tag_list": []
         }
+
         doc = await app.mongo['test'].runoob.insert_one(document)
 
         return text(request_data)
+
+    async def delete(self, request):
+        request_data = request.args
+        print("request_data:", request_data)
+        id = request_data['id']
+        doc = await app.mongo['test'].runoob.remove_one()
+        return json(request_data)
 
 
 first_page_bp.add_route(ContentListView.as_view(), '/content')
