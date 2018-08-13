@@ -9,10 +9,7 @@
 from sanic import Sanic
 from sanic_mongo import Mongo
 from sanic_cors import CORS
-from aoiklivereload import LiveReloader
 
-reloader = LiveReloader()
-reloader.start_watcher_thread()
 
 app = Sanic(__name__)
 CORS(app, automatic_options=True)
