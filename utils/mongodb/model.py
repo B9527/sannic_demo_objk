@@ -15,12 +15,12 @@ class MongoDBModel(Model):
 
     def on_init(self):
         pass
-   
+
     @staticmethod
     def __transform_doc(doc):
         doc['_id'] = str(doc['_id'])
         return doc
-    
+
     def get_valid_obj(self, obj):
         # check fields
         valid_obj = {}
@@ -33,39 +33,37 @@ class MongoDBModel(Model):
         return valid_obj
 
     def find(self):
-        docs = map(self.__transform_doc, self.collection.find())
+        docs = self.collection.find().to_list(length=100)
         return docs
-    
+
     def find_by_id(self, id):
         doc = self.collection.find_one({'_id': ObjectId(id)})
-        return None if doc is None else self.__transform_doc(doc)
+        return None if doc is None else doc
 
     def create(self, obj):
         valid_obj = self.get_valid_obj(obj)
         result = self.collection.insert_one(valid_obj)
-        valid_obj['_id'] = str(result.inserted_id)
-        return valid_obj
+        return result
 
     def update_by_id(self, id, obj):
-        doc = self.find_by_id(id)
-        if doc is None:
-            return None
-        
+        # doc = self.find_by_id(id)
+        # if doc is None:
+        #     return None
+
         valid_obj = self.get_valid_obj(obj)
         self.collection.update_one(
             {'_id': ObjectId(id)},
             {'$set': valid_obj}
         )
-        doc.update(valid_obj)
-        return self.__transform_doc(doc)
-    
+        doc = self.find_by_id(id)
+        if doc is None:
+            return None
+        return doc
+
     def remove_by_id(self, id):
         doc = self.find_by_id(id)
         if doc is None:
             return False
         else:
-            self.collection.remove({'_id': ObjectId(id)})
+            self.collection.delete_one({'_id': ObjectId(id)})
             return True
-
-    
-       
