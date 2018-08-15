@@ -15,7 +15,8 @@ reloader.start_watcher_thread()
 
 @app.middleware('response')
 async def custom_banner(request, response):
-    response.headers["content-type"] = "application/json"
+    pass
+    # response.headers["content-type"] = "application/json"
 
 
 app.blueprint(first_page_bp)

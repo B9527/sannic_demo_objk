@@ -29,7 +29,10 @@ class MongoDBModel(Model):
             valid_obj = obj.copy()
         else:
             for f in self.fields:
-                valid_obj[f] = obj[f]
+                if f in obj.keys():
+                    valid_obj[f] = obj[f]
+                else:
+                    valid_obj[f] = None
         return valid_obj
 
     def find(self):
@@ -41,8 +44,8 @@ class MongoDBModel(Model):
         return None if doc is None else doc
 
     def create(self, obj):
-        valid_obj = self.get_valid_obj(obj)
-        result = self.collection.insert_one(valid_obj)
+        # valid_obj = self.get_valid_obj(obj)
+        result = self.collection.insert_one(obj)
         return result
 
     def update_by_id(self, id, obj):
@@ -50,10 +53,10 @@ class MongoDBModel(Model):
         # if doc is None:
         #     return None
 
-        valid_obj = self.get_valid_obj(obj)
+        # valid_obj = self.get_valid_obj(obj)
         self.collection.update_one(
             {'_id': ObjectId(id)},
-            {'$set': valid_obj}
+            {'$set': obj}
         )
         doc = self.find_by_id(id)
         if doc is None:
