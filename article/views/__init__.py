@@ -14,3 +14,5 @@ first_page_bp.add_route(ContentListView.as_view(), '/content')
 first_page_bp.add_route(UploadImageView.as_view(), '/upImage')
 first_page_bp.static('/image', baseDir)
 __all__ = ['first_page_bp']
+
+/home/yang/CODE/sanic_project/fw_project/image/61/2f9a705de9fe4c502b793e21e11c5d.jpg

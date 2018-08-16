@@ -34,10 +34,11 @@ class ArticleModel(MongoDBModel):
     is_thumb:是否点赞，
     is_comment:是否品论，
     is_forward:是否转发
+    id_delete:
     """
     coll_name = "runoob"
     fields = ['title', 'content', 'type', 'create_time', 'red_count', 'thumbs_count', 'forward_num', 'tag_list',
-              'comment_count', 'creator', 'memo',
+              'comment_count', 'creator', 'memo', 'is_delete'
               'collection_number', 'reports_num', 'update_time', 'status', 'image_url_list'
               ]
 
@@ -66,8 +67,8 @@ class ArticleModel(MongoDBModel):
         """
         docs = self.collection.find(
             {'$or':
-                 [{'title': {'$regex': key_words}, 'type': '1'},
-                  {"content": {'$regex': key_words}, "type": "0"}
+                 [{'title': {'$regex': key_words}, 'type': '1', 'is_delete': '0'},
+                  {"content": {'$regex': key_words}, "type": "0", 'is_delete': '0'}
                   ]
              }
 

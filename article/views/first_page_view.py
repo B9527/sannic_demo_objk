@@ -37,7 +37,7 @@ class ContentListView(HTTPMethodView):
                 print("key_words:", key_words)
                 docs = await article_model.find_title_or_content(key_words)
             else:
-                docs = await article_model.find()
+                docs = await article_model.find_by_obj({'is_delete': '0'})
             docs = article_model.trans_obj_id_str(docs)
             return_data['results']['data_list'] = docs
         except Exception as ex:
@@ -55,11 +55,13 @@ class ContentListView(HTTPMethodView):
             "results": {}
         }
         request_data = request.json
+        print("request_data:", request_data)
         try:
             doc_data = ArticlePostService.add_default_data(request_data)
 
             article_model = ArticleModel(self.collection)
             valid_obj = article_model.get_valid_obj(doc_data)
+            valid_obj['is_delete'] = '0'
             result = await article_model.create(valid_obj)
             valid_obj = article_model.trans_obj_id_str(valid_obj)
             return_data['results']['data'] = valid_obj
@@ -113,6 +115,3 @@ class ContentListView(HTTPMethodView):
             return_data['message'] = str(ex)
         finally:
             return json(return_data)
-
-
-

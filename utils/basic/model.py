@@ -18,3 +18,6 @@ class Model(object):
 
     def remove_by_id(self, id):
         raise NotImplementedError
+
+    def find_by_obj(self, obj):
+        raise NotImplementedError

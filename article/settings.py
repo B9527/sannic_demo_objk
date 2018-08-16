@@ -12,7 +12,7 @@ from sanic_cors import CORS
 import sys
 
 baseDir = sys.path[0] + '/image/'
-imge_url = "http://192.168.1.141:8000/api/v1/first_page"
+imge_url = "http://192.168.1.63:8000/api/v1/first_page"
 
 
 app = Sanic(__name__)

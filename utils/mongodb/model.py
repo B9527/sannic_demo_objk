@@ -43,6 +43,10 @@ class MongoDBModel(Model):
         doc = self.collection.find_one({'_id': ObjectId(id)})
         return None if doc is None else doc
 
+    def find_by_obj(self, obj):
+        docs = self.collection.find(obj).to_list(length=100)
+        return docs
+
     def create(self, obj):
         # valid_obj = self.get_valid_obj(obj)
         result = self.collection.insert_one(obj)
@@ -64,9 +68,20 @@ class MongoDBModel(Model):
         return doc
 
     def remove_by_id(self, id):
+
+        self.collection.update_one(
+            {'_id': ObjectId(id)},
+            {'$set': {'is_delete': '1'}}
+        )
         doc = self.find_by_id(id)
         if doc is None:
-            return False
-        else:
-            self.collection.delete_one({'_id': ObjectId(id)})
-            return True
+            return None
+        return doc
+
+
+        # doc = self.find_by_id(id)
+        # if doc is None:
+        #     return False
+        # else:
+        #     self.collection.delete_one({'_id': ObjectId(id)})
+        #     return True
