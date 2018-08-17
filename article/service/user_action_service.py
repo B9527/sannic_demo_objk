@@ -7,6 +7,10 @@
 # @Software: PyCharm
 
 
+from article.models.concern_model import ConcernModel
+from article.settings import app, db_name
+
+
 class UserActionService(object):
     action_map = {
         "1": "关注",
@@ -22,15 +26,23 @@ class UserActionService(object):
     }
 
     @staticmethod
-    def follow_someone(operator, action_args):
+    def concern_someone(operator, action_args):
         """
         关注
         :return:
         """
-        pass
+        concern_collection = app.mongo[db_name].follow_doc
+        concern_model = ConcernModel(concern_collection)
+        valid_obj = {
+            "concern_person_id": operator,
+            "concerned_person_id": action_args['concerned_person_id'],
+            "create_time": "2018-08-17",
+            "is_concern": "1"
+        }
+        concern_model.find_or_insert(valid_obj)
 
     @staticmethod
-    def dis_follow_someone(operator, action_args):
+    def dis_concern_someone(operator, action_args):
         """
         取关
         :return:
@@ -117,9 +129,9 @@ class UserActionService(object):
         :return:
         """
         if action_type == "1":
-            cls.follow_someone(operator, action_args)
+            cls.concern_someone(operator, action_args)
         elif action_type == "-1":
-            cls.dis_follow_someone(operator, action_args)
+            cls.dis_concern_someone(operator, action_args)
         elif action_type == "2":
             cls.thumb_article(operator, action_args)
         elif action_type == "-2":
@@ -138,5 +150,3 @@ class UserActionService(object):
             cls.report_article(operator, action_args)
         else:
             raise Exception("400", "can shu cuo wu")
-
-

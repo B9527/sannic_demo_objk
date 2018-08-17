@@ -18,6 +18,7 @@ imge_url = "http://192.168.1.63:8000/api/v1/first_page"
 app = Sanic(__name__)
 CORS(app, automatic_options=True)
 
+db_name = "test"
 mongo_uri = "mongodb://{host}:{port}/{database}".format(
     database='test',
     port=27017,

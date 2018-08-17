@@ -45,6 +45,7 @@ class MongoDBModel(Model):
 
     def find_by_obj(self, obj):
         docs = self.collection.find(obj).to_list(length=100)
+        print("docs:", docs)
         return docs
 
     def create(self, obj):
@@ -85,3 +86,4 @@ class MongoDBModel(Model):
         # else:
         #     self.collection.delete_one({'_id': ObjectId(id)})
         #     return True
+

@@ -9,7 +9,7 @@
 from sanic.response import json, text
 from sanic import Blueprint
 from sanic.views import HTTPMethodView
-from article.settings import app
+from article.settings import app, db_name
 from article.models.article_model import ArticleModel
 from article.service.article_service import ArticlePostService
 
@@ -21,7 +21,7 @@ first_page_bp = Blueprint('first_page', url_prefix='/api/v1/first_page')
 class ContentListView(HTTPMethodView):
 
     def __init__(self):
-        self.collection = app.mongo['test'].runoob
+        self.collection = app.mongo[db_name].article_doc
 
     async def get(self, request):
         return_data = {
@@ -30,14 +30,19 @@ class ContentListView(HTTPMethodView):
             "results": {}
         }
         try:
+            print(app.mongo)
             request_data = request.args
             article_model = ArticleModel(self.collection)
+            # article_model = ArticleModel("article_doc")
             if "key_words" in request_data.keys():
                 key_words = request_data['key_words'][0]
-                print("key_words:", key_words)
                 docs = await article_model.find_title_or_content(key_words)
             else:
                 docs = await article_model.find_by_obj({'is_delete': '0'})
+            ###
+            count = await self.collection.count_documents({})
+            print("count:", count)
+            ###
             docs = article_model.trans_obj_id_str(docs)
             return_data['results']['data_list'] = docs
         except Exception as ex:
@@ -55,7 +60,6 @@ class ContentListView(HTTPMethodView):
             "results": {}
         }
         request_data = request.json
-        print("request_data:", request_data)
         try:
             doc_data = ArticlePostService.add_default_data(request_data)
 

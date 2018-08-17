@@ -36,9 +36,9 @@ class ArticleModel(MongoDBModel):
     is_forward:是否转发
     id_delete:
     """
-    coll_name = "runoob"
+    coll_name = "article_doc"
     fields = ['title', 'content', 'type', 'create_time', 'red_count', 'thumbs_count', 'forward_num', 'tag_list',
-              'comment_count', 'creator', 'memo', 'is_delete'
+              'comment_count', 'creator', 'memo', 'is_delete',
               'collection_number', 'reports_num', 'update_time', 'status', 'image_url_list'
               ]
 
