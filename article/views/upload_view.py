@@ -10,6 +10,8 @@ import os
 from sanic.response import json
 from sanic.views import HTTPMethodView
 from article.settings import baseDir, imge_url
+from PIL import Image
+
 
 
 # 获取图片后缀名
@@ -72,9 +74,14 @@ class UploadImageView(HTTPMethodView):
         temp_file = open(save_path, 'wb')
         temp_file.write(image)
         temp_file.close()
+        #
+        im = Image.open(baseDir+res_path)
+        print(im)
 
         # 给客户端返回结果
         return_data['results']['path'] = imge_url + '/image'+res_path
+        return_data['results']['width'] = im.size[0]
+        return_data['results']['height'] = im.size[1]
         return json(return_data)
 
 

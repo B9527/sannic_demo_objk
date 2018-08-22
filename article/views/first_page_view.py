@@ -34,19 +34,36 @@ class ContentListView(HTTPMethodView):
             request_data = request.args
             article_model = ArticleModel(self.collection)
             # article_model = ArticleModel("article_doc")
+            filter_args = {
+                'is_delete': '0'
+            }
             if "key_words" in request_data.keys():
                 key_words = request_data['key_words'][0]
                 docs = await article_model.find_title_or_content(key_words)
+                count = len(docs)
             else:
-                docs = await article_model.find_by_obj({'is_delete': '0'})
-            ###
-            count = await self.collection.count_documents({})
-            print("count:", count)
+                if "id" in request_data.keys():
+                    print("id:", request_data['id'][0])
+                    docs = await article_model.find_by_id(request_data['id'][0])
+                    print("docs:", docs)
+                    count = 1
+                else:
+                    if "creator_id" in request_data.keys():
+                        filter_args['creator_id'] = request_data['creator_id'][0]
+                    print("filter_args:", filter_args)
+                    docs = await article_model.find_by_obj(filter_args)
+                    ###
+                    count = await self.collection.count_documents(filter_args)
             ###
             docs = article_model.trans_obj_id_str(docs)
+            if isinstance(docs, dict):
+                temp_list = [docs]
+                docs = temp_list
             return_data['results']['data_list'] = docs
+            return_data['results']['count'] = count
         except Exception as ex:
             return_data['results']['data_list'] = []
+            return_data['results']['count'] = 0
             return_data['message'] = str(ex)
             return_data['code'] = '500'
         finally:
@@ -83,17 +100,24 @@ class ContentListView(HTTPMethodView):
             "code": "200",
             "results": {}
         }
-
-        request_data = request.args
-        if "id" in request_data.keys():
-            article_id = request_data['id'][0]
-            article_model = ArticleModel(self.collection)
-            article_model.remove_by_id(article_id)
-            return json(return_data)
-        else:
+        try:
+            request_data = request.args
+            if "id" in request_data.keys():
+                article_id = request_data['id'][0]
+                article_model = ArticleModel(self.collection)
+                article_model.remove_by_id(article_id)
+                return json(return_data)
+            else:
+                return_data = {
+                    "message": "缺少参数id",
+                    "code": "300",
+                    "results": {}
+                }
+                return json(return_data)
+        except Exception as e:
             return_data = {
-                "message": "缺少参数id",
-                "code": "300",
+                "message": str(e),
+                "code": "500",
                 "results": {}
             }
             return json(return_data)
@@ -105,7 +129,6 @@ class ContentListView(HTTPMethodView):
             "code": "200",
             "results": {}
         }
-
         request_data = request.json
         try:
             doc_id = request_data['id']

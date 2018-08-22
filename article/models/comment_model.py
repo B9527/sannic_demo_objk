@@ -29,3 +29,20 @@ class CommentModel(MongoDBModel):
 
     fields = ["commenter_id", "article_id", "create_time", "up_comment_id", "content", "image_url_list",
               'praise_num', "status"]
+
+    @staticmethod
+    def trans_obj_id_str(docs):
+
+        if isinstance(docs, list):
+            for doc in docs:
+                doc_id = str(doc.pop("_id"))
+                doc['id'] = doc_id
+            return docs
+        elif isinstance(docs, dict):
+            doc_id = str(docs.pop('_id'))
+            docs['id'] = doc_id
+            return docs
+
+
+
+

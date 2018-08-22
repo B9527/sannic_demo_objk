@@ -36,7 +36,7 @@ class MongoDBModel(Model):
         return valid_obj
 
     def find(self):
-        docs = self.collection.find().to_list(length=100)
+        docs = self.collection.find().to_list(length=1000)
         return docs
 
     def find_by_id(self, id):
@@ -44,7 +44,7 @@ class MongoDBModel(Model):
         return None if doc is None else doc
 
     def find_by_obj(self, obj):
-        docs = self.collection.find(obj).to_list(length=100)
+        docs = self.collection.find(obj).to_list(length=1000)
         print("docs:", docs)
         return docs
 

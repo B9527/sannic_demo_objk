@@ -38,7 +38,7 @@ class ArticleModel(MongoDBModel):
     """
     coll_name = "article_doc"
     fields = ['title', 'content', 'type', 'create_time', 'red_count', 'thumbs_count', 'forward_num', 'tag_list',
-              'comment_count', 'creator', 'memo', 'is_delete',
+              'comment_count', 'creator', 'memo', 'is_delete', 'creator_id',
               'collection_number', 'reports_num', 'update_time', 'status', 'image_url_list'
               ]
 

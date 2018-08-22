@@ -28,14 +28,47 @@ class ConcernModel(MongoDBModel):
     fields = ["concern_person_id", "concerned_person_id", "create_time", "is_concern"]
 
     async def find_or_insert(self, valid_obj):
+        print("hello")
         count_docs = await self.collection.count_documents({"concern_person_id": valid_obj["concern_person_id"],
                                                             "concerned_person_id": valid_obj[
                                                                 'concerned_person_id']})
 
+        print("count_docs:", count_docs)
+        print("valid_obj:", valid_obj)
         if count_docs == 0:
-            doc = self.collection.insert_one(valid_obj)
+
+            doc = await self.collection.insert_one(valid_obj)
         else:
             doc = await self.collection.update_one({"concern_person_id": valid_obj["concern_person_id"],
                                                     "concerned_person_id": valid_obj[
-                                                        'concerned_person_id']}, {'$set': {'is_concern': '1'}})
-        return doc
+                                                        'concerned_person_id']},
+                                                   {'$set': {'is_concern': valid_obj['is_concern'],
+                                                             'create_time': valid_obj['create_time']}})
+        doc = await self.collection.find_one({"concern_person_id": valid_obj["concern_person_id"],
+                                              "concerned_person_id": valid_obj[
+                                                  'concerned_person_id']})
+        return self.trans_obj_id_str(doc)
+
+    @staticmethod
+    def trans_obj_id_str(docs):
+
+        if isinstance(docs, list):
+            for doc in docs:
+                doc_id = str(doc.pop("_id"))
+                doc['id'] = doc_id
+            return docs
+        elif isinstance(docs, dict):
+            doc_id = str(docs.pop('_id'))
+            docs['id'] = doc_id
+            return docs
+        else:
+            return "gggggggg"
+
+    async def check_is_concern(self, concern_person_id, concerned_person_id):
+        count_docs = await self.collection.count_documents({"concern_person_id": concern_person_id,
+                                                            "concerned_person_id": concerned_person_id,
+                                                            "is_concern": "1"})
+        if count_docs == 0:
+            return False
+        else:
+            return True
